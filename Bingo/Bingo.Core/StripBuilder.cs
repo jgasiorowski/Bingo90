@@ -12,7 +12,7 @@
             }
         }
 
-        internal void Distribute(int v)
+        internal void Distribute(int v, int rangeIndex)
         {
             var random = new Random();
             var min = Tickets.Select(x => x.NumbersCount).Min();
@@ -31,22 +31,17 @@
                 }
             }
 
-            var aa = a.ToArray();
-            random.Shuffle(aa);
-            var ordered = aa.Concat(b).ToList();
+            random.Shuffle1(a);
+            var ordered = a.Concat(b).ToList();
 
-            //var minlist = Tickets.Where(x => x.Numbers.Count == min).Select(x => x.Index).ToArray();
-            //var otherlist = Tickets.Where(x => x.Numbers.Count != min).Select(a => a.Index).ToList();
-            //random.Shuffle(minlist);
-            //var ordered = minlist.Concat(otherlist).ToList();
 
             for (int i = 0; i < 6; i++)
             {
                 var ticket = Tickets[ordered[i]];
 
-                if (ticket.CanAccept(v))
+                if (ticket.CanAccept(v, rangeIndex))
                 {
-                    ticket.Place(v);
+                    ticket.Place(v, rangeIndex);
                     return;
                 }
             }
@@ -60,6 +55,21 @@
 
 
             return new Strip(tickets);
+        }
+    }
+
+    static class RandomExtensions
+    {
+        public static void Shuffle1(this Random rng, List<int> array)
+        {
+            int n = array.Count;
+            while (n > 1)
+            {
+                int k = rng.Next(n--);
+                int temp = array[n];
+                array[n] = array[k];
+                array[k] = temp;
+            }
         }
     }
 

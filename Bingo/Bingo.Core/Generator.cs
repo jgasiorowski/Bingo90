@@ -1,4 +1,6 @@
-﻿namespace Bingo.Core
+﻿using System.Collections.Generic;
+
+namespace Bingo.Core
 {
     public class Generator
     {
@@ -30,30 +32,27 @@
 
             var random = new Random();
 
+            
+
             foreach (var ticket in strip.Tickets)
             {
-                GetForColumn(ticket, numbers1, random);
-                GetForColumn(ticket, numbers2, random);
-                GetForColumn(ticket, numbers3, random);
-                GetForColumn(ticket, numbers4, random);
-                GetForColumn(ticket, numbers5, random);
-                GetForColumn(ticket, numbers6, random);
-                GetForColumn(ticket, numbers7, random);
-                GetForColumn(ticket, numbers8, random);
-                GetForColumn(ticket, numbers9, random);
+                for (int i = 0; i < all.Count; i++)
+                {
+                    GetForColumn(ticket, all[i], random, i);
+                }
             }
             /// ===========
             /// 
 
-            foreach (var list in all)
+            for (var i = 0; i < all.Count; i++)
             {
+                var list = all[i];
                 do
                 {
                     var index = random.Next(list.Count);
-                    strip.Distribute(list[index]);
+                    strip.Distribute(list[index], i);
                     list.RemoveAt(index);
                 } while (list.Count > 0);
-
             }
 
             ///--------------
@@ -67,10 +66,10 @@
             return strip.Build();
         }
 
-        private static void GetForColumn(TicketBuilder ticket, List<int> numbers1, Random random)
+        private static void GetForColumn(TicketBuilder ticket, List<int> numbers1, Random random, int rangeIndex)
         {
             var index = random.Next(numbers1.Count);
-            ticket.Place(numbers1[index]);
+            ticket.Place(numbers1[index], rangeIndex);
             numbers1.RemoveAt(index);
         }
     }
