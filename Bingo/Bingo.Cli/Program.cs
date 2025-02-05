@@ -20,7 +20,7 @@ namespace Bingo.Cli
 
             for (int i = 0; i < 6; i++)
             {
-                strip.Tickets[i].Out();
+                strip.Tickets[i].Print();
             }
 
             Console.WriteLine($"All 15? = {strip.Tickets.All(t => t.Numbers.Count == 15)}");
@@ -80,6 +80,14 @@ namespace Bingo.Cli
 
             }
 
+            ///--------------
+            ///
+
+            foreach (var ticket in strip.Tickets)
+            {
+                ticket.BalanceEmptyCells();
+            }
+
             return strip;
         }
 
@@ -98,7 +106,7 @@ namespace Bingo.Cli
 
         public Strip()
         {
-            for (int i = 0;i < 6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 Tickets[i] = new Ticket(i);
             }
@@ -194,39 +202,39 @@ namespace Bingo.Cli
         public Ticket(int index)
         {
             Index = index;
-            for (int i = 0;i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Cells[i] = new int[9];
             }
         }
-        public void Out()
+        public void Print()
         {
             Console.WriteLine("--------------------------");
             for (int i = 0; i < 3; i++)
             {
-                var row = string.Join('|', Cells[i].Select(n => n.ToString("00")));
-                
+                var row = string.Join('|', Cells[i].Select(n => n == 99 ? "  " : n.ToString("00")));
+
                 Console.WriteLine(row);
             }
             Console.WriteLine("--------------------------");
-            for(var i = 0; i < 3; i++)
-            {
-                foreach (var range in Ranges)
-                {
-                    if (range.Count -1 < i)
-                    {
-                        Console.Write("  \t");
-                    }
-                    else
-                    {
-                        Console.Write($"{range.OrderBy(r => r).ToArray()[i].ToString("00")}\t");
+            //for (var i = 0; i < 3; i++)
+            //{
+            //    foreach (var range in Ranges)
+            //    {
+            //        if (range.Count - 1 < i)
+            //        {
+            //            Console.Write("  |");
+            //        }
+            //        else
+            //        {
+            //            Console.Write($"{range.OrderBy(r => r).ToArray()[i].ToString("00")}|");
 
-                    }
-                }
-                Console.WriteLine();
-            }
+            //        }
+            //    }
+            //    Console.WriteLine();
+            //}
 
-            Console.WriteLine(string.Join(',', Numbers.Order()));
+            //Console.WriteLine(string.Join(',', Numbers.Order()));
 
             Console.WriteLine();
         }
@@ -235,7 +243,7 @@ namespace Bingo.Cli
         {
             var range = v / 10;
             range = range == 9 ? range - 1 : range;
-            
+
             Numbers.Add(v);
             Ranges[range].Add(v);
         }
@@ -247,6 +255,105 @@ namespace Bingo.Cli
             var howManyInRange = Ranges[range].Count();
 
             return howManyInRange < 3 && Numbers.Count < 15;
+        }
+
+        internal void BalanceEmptyCells()
+        {
+            var random = new Random();
+            var noEmpty = new List<List<int>>();
+            var oneEmpty = new List<List<int>>();
+            var twoEmpty = new List<List<int>>();
+
+            foreach (var range in Ranges)
+            {
+                if (range.Count == 1)
+                {
+                    twoEmpty.Add(range);
+                    continue;
+                }
+
+                if (range.Count == 2)
+                {
+                    oneEmpty.Add(range);
+                    continue;
+                }
+
+                if (range.Count == 3)
+                {
+                    noEmpty.Add(range);
+                    continue;
+                }
+            }
+
+            //var distribution = $"{noEmpty.Count}|{oneEmpty.Count}|{twoEmpty.Count}";
+
+            //var posibilities = new List<string>
+            //{
+            //    "0|6|3",
+            //    "1|4|4",
+            //    "2|2|5",
+            //    "3|0|6",
+            //};
+
+            //if (noEmpty.Count < 4)
+            //{
+            var emptyCellsLeft = new Pair[] { new Pair(0, 4), new Pair(1, 4), new Pair(2, 4) };
+            //var row = new int[] { 0, 1, 2 };
+            foreach (var range in twoEmpty)
+            {
+                var rowindicesLeft = new List<int>() { 0, 1, 2 };
+                var row = emptyCellsLeft.OrderByDescending(x => x.Count).First();
+                var columnIndex = Ranges.IndexOf(range);
+                Cells[row.Index][columnIndex] = 99;
+                rowindicesLeft.Remove(row.Index);
+                row.Count--;
+
+                row = emptyCellsLeft.OrderByDescending(x => x.Count).First();
+
+                Cells[row.Index][columnIndex] = 99;
+                rowindicesLeft.Remove(row.Index);
+                row.Count--;
+
+                Cells[rowindicesLeft.First()][columnIndex] = range.First();
+            }
+
+            foreach (var range in oneEmpty)
+            {
+                var rowindicesLeft = new List<int>() { 0, 1, 2 };
+                var row = emptyCellsLeft.OrderByDescending(x => x.Count).First();
+                var columnIndex = Ranges.IndexOf(range);
+                Cells[row.Index][columnIndex] = 99;
+                rowindicesLeft.Remove(row.Index);
+                row.Count--;
+
+                var ordered = range.Order().ToArray();
+                Cells[rowindicesLeft.First()][columnIndex] = ordered[0];
+                Cells[rowindicesLeft.Last()][columnIndex] = ordered[1];
+
+            }
+
+            foreach (var range in noEmpty)
+            {
+                var columnIndex = Ranges.IndexOf(range);
+                var ordered = range.Order().ToArray();
+
+                Cells[0][columnIndex] = ordered[0];
+                Cells[1][columnIndex] = ordered[1];
+                Cells[2][columnIndex] = ordered[2];
+            }
+            //}
+
+        }
+
+        class Pair
+        {
+            public Pair(int index, int count)
+            {
+                Index = index;
+                Count = count;
+            }
+            public int Index;
+            public int Count;
         }
     }
 }
