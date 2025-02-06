@@ -32,8 +32,6 @@ namespace Bingo.Core
 
             var random = new Random();
 
-            
-
             foreach (var ticket in strip.Tickets)
             {
                 for (int i = 0; i < all.Count; i++)

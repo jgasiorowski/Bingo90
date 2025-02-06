@@ -51,7 +51,7 @@
 
         internal Strip Build()
         {
-            var tickets = Tickets.Select(t => t.ToTicket()).ToArray();
+            var tickets = Tickets.Select(t => t.Build()).ToArray();
 
 
             return new Strip(tickets);
