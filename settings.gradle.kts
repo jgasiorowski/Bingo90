@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = "bingo"
-include("app", "list", "utilities")
+include("app")
