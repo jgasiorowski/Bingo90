@@ -31,7 +31,7 @@
                 }
             }
 
-            random.Shuffle1(a);
+            random.QuickShuffle(a);
             var ordered = a.Concat(b).ToList();
 
 
@@ -60,7 +60,7 @@
 
     static class RandomExtensions
     {
-        public static void Shuffle1(this Random rng, List<int> array)
+        public static void QuickShuffle(this Random rng, List<int> array)
         {
             int n = array.Count;
             while (n > 1)

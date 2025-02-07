@@ -7,7 +7,7 @@ namespace Bingo.Cli
     {
         static async Task Main(string[] args)
         {
-            //Strip strip = null;
+            Strip strip = null;
 
             
 
@@ -19,16 +19,16 @@ namespace Bingo.Cli
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            Parallel.For(0, 10000, i =>
-            {
-                var strip = new Generator().Generate();
-
-            });
-
-            //for (var i = 0; i < 10000; i++)
+            //Parallel.For(0, 10000, i =>
             //{
-            //    strip = new Generator().Generate();
-            //}
+            //    var strip = new Generator().Generate();
+
+            //});
+
+            for (var i = 0; i < 10000; i++)
+            {
+                strip = new Generator().Generate();
+            }
 
             sw.Stop();
             Console.WriteLine($"czas {sw.ElapsedMilliseconds}");

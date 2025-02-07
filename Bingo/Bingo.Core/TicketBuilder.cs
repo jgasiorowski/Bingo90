@@ -37,6 +37,7 @@
         internal void Place(int v, int rangeIndex)
         {
             NumbersCount++;
+
             Ranges[rangeIndex].Add(v);
         }
 
