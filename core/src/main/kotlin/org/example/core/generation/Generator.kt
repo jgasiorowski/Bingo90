@@ -1,5 +1,6 @@
-package org.example.core
+package org.example.core.generation
 
+import org.example.core.Strip
 import kotlin.random.Random
 
 class Generator {

@@ -1,4 +1,6 @@
-package org.example.core
+package org.example.core.generation
+
+import org.example.core.Ticket
 
 class TicketBuilder(val index: Int) {
     var numbersCount = 0

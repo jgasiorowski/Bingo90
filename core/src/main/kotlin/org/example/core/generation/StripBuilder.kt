@@ -1,4 +1,6 @@
-package org.example.core
+package org.example.core.generation
+
+import org.example.core.Strip
 
 class StripBuilder() {
     fun build(): Strip {
