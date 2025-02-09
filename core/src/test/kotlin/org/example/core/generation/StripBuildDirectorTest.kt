@@ -10,8 +10,8 @@ import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 import kotlin.time.toDuration
 
-class GeneratorTest {
-    private val strip = Generator().Generate()
+class StripBuildDirectorTest {
+    private val strip = StripBuildDirector().make()
 
     @Test
     fun `Strip contains 6 tickets`() {
@@ -142,7 +142,7 @@ class GeneratorTest {
     fun `Generate 10k strips in less than 1s`() {
         val timeTaken = measureTime {
             for (i in (1..10000)) {
-                Generator().Generate();
+                StripBuildDirector().make();
             }
         }
 

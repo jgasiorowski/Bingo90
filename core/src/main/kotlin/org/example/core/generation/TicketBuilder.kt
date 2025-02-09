@@ -22,10 +22,11 @@ class TicketBuilder(val index: Int) {
     }
 
     fun build() : Ticket {
+        this.balanceEmptyCells()
         return Ticket(rows)
     }
 
-    fun balanceEmptyCells() {
+    private fun balanceEmptyCells() {
         val emptyCellsLeft = arrayOf(
             Pair(0, 4),
             Pair(1, 4),
