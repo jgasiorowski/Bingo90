@@ -2,19 +2,30 @@ package org.example.core.generation
 
 import org.example.core.Ticket
 
-class TicketBuilder(val index: Int) {
+/**
+ * This class is responsible for building ticket. It receives numbers via [place] function.
+ *
+ * After all numbers got distributed [build] function balances ticket's empty cells
+ */
+internal class TicketBuilder(val index: Int) {
     var numbersInTicketCount = 0
     private val columns = Array(9) { Column(it) }
     private val rows = Array(3) { arrayOfNulls<Int?>(9) }
 
-    fun hasSpace(rangeIndex: Int): Boolean {
-        val howManyInColumn = columns[rangeIndex].size
+    fun hasSpace(columnIndex: Int): Boolean {
+        val howManyInColumn = columns[columnIndex].size
         return howManyInColumn < 3 && numbersInTicketCount < 15
     }
 
-    fun place(value: Int, rangeIndex: Int) {
+    /**
+     * Places number in matching column. This function is not checking if number can be placed.
+     *
+     * It is expected that caller will use [hasSpace] function first or has other mechanism to track ticket and
+     * column capacity
+     */
+    fun place(value: Int, columnIndex: Int) {
         numbersInTicketCount++
-        columns[rangeIndex].add(value)
+        columns[columnIndex].add(value)
     }
 
     fun build(): Ticket {
@@ -39,7 +50,8 @@ class TicketBuilder(val index: Int) {
         }
         fun arrangeColumnWithOneEmptyCell(column: Column){
             val columnIndicesLeft = mutableListOf(0, 1, 2)
-            val row = rowsEmptyCells.maxByOrNull { c -> c.count }!!
+
+            val row = rowsEmptyCells.maxBy { c -> c.count }
             val columnIndex = column.index
 
             columnIndicesLeft.remove(row.index)

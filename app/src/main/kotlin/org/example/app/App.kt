@@ -12,7 +12,7 @@ fun main() {
     var strip: Strip? = null
     val timeTaken = measureTime {
         for (i in (1..10000)){
-            strip = StripFactory().create()
+            strip = StripFactory.create()
         }
     }
 
