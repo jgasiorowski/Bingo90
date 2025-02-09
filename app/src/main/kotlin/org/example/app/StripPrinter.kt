@@ -13,11 +13,13 @@ class StripPrinter {
 
         private fun print(ticket: Ticket) {
             println()
-            println("--------------------------")
+            println("----------------------------")
             for (row in ticket.rows){
-                println(row.map { i -> if (i == null)  "  " else String.format("%02d", i) }.joinToString("|"))
+                println("|${row.joinToString("|") {
+                    number -> number?.let { String.format("%02d", it) } ?: "  "}
+                }|")
             }
-            println("--------------------------")
+            println("----------------------------")
         }
     }
 }

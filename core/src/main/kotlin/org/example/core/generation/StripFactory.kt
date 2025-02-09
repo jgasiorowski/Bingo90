@@ -17,21 +17,21 @@ class StripFactory {
     private fun distributeEqually() {
         for (ticket in tickets) {
             for (groupIndex in availableNumberGroups.indices) {
-                val index = Random.nextInt(availableNumberGroups[groupIndex].size)
-                ticket.place(availableNumberGroups[groupIndex][index], groupIndex)
-                availableNumberGroups[groupIndex].removeAt(index)
+                val randomNumberIndex = Random.nextInt(availableNumberGroups[groupIndex].size)
+                ticket.place(availableNumberGroups[groupIndex][randomNumberIndex], groupIndex)
+                availableNumberGroups[groupIndex].removeAt(randomNumberIndex)
             }
         }
     }
 
     private fun distributeBalanced() {
-        for (i in availableNumberGroups.indices) {
-            val list = availableNumberGroups[i]
+        for (groupIndex in availableNumberGroups.indices) {
+            val group = availableNumberGroups[groupIndex]
             do {
-                val index = Random.nextInt(list.size)
-                this.distribute(list[index], i)
-                list.removeAt(index)
-            } while (list.size > 0)
+                val randomNumberIndex = Random.nextInt(group.size)
+                this.distribute(group[randomNumberIndex], groupIndex)
+                group.removeAt(randomNumberIndex)
+            } while (group.size > 0)
         }
     }
 
@@ -40,25 +40,25 @@ class StripFactory {
     }
 
     private fun distribute(value: Int, rangeIndex: Int) {
-        val min = tickets.minOfOrNull { t -> t.numbersCount }
-        val a = mutableListOf<Int>()
-        val b = mutableListOf<Int>()
+        val minimalNumbersCountInTickets = tickets.minOfOrNull { t -> t.numbersInTicketCount }
+        val ticketsWithMinimalNumbersCount = mutableListOf<Int>()
+        val otherTickets = mutableListOf<Int>()
 
         for (ticket in tickets) {
-            if (ticket.numbersCount == min) {
-                a.add(ticket.index)
+            if (ticket.numbersInTicketCount == minimalNumbersCountInTickets) {
+                ticketsWithMinimalNumbersCount.add(ticket.index)
             } else {
-                b.add(ticket.index)
+                otherTickets.add(ticket.index)
             }
         }
 
-        a.shuffle()
-        val ordered = a + b
+        ticketsWithMinimalNumbersCount.shuffle()
+        val ordered = ticketsWithMinimalNumbersCount + otherTickets
 
         for (i in tickets.indices) {
             val ticket = tickets[ordered[i]]
 
-            if (ticket.canAccept(value, rangeIndex)) {
+            if (ticket.hasSpace(rangeIndex)) {
                 ticket.place(value, rangeIndex)
                 return
             }
