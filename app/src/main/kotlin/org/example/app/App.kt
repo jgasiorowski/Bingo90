@@ -3,6 +3,21 @@
  */
 package org.example.app
 
-fun main() {
+import org.example.core.*
+import org.example.core.generation.Generator
+import kotlin.time.measureTime
 
+
+fun main() {
+    var strip: Strip? = null
+    val timeTaken = measureTime {
+        for (i in (1..10000)){
+            strip = Generator().Generate()
+        }
+    }
+
+    println(timeTaken)
+    StripPrinter.print(strip!!);
 }
+
+

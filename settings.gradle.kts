@@ -12,3 +12,4 @@ plugins {
 
 rootProject.name = "bingo"
 include("app")
+include("core")
