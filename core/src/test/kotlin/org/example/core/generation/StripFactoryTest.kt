@@ -2,6 +2,7 @@ package org.example.core.generation
 
 import org.example.core.extensions.columns
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.function.Executable
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -10,15 +11,17 @@ import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 import kotlin.time.toDuration
 
-class GeneratorTest {
-    private val strip = Generator().Generate()
+const val REPEATED_TEST_COUNT = 1000
 
-    @Test
+class StripFactoryTest {
+    private val strip = StripFactory.create()
+
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `Strip contains 6 tickets`() {
         assertEquals(6, strip.tickets.size)
     }
 
-    @Test
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `A bingo ticket consists of 9 columns`() {
         assertAll(
             strip.tickets.map { ticket ->
@@ -27,7 +30,7 @@ class GeneratorTest {
         )
     }
 
-    @Test
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `A bingo ticket consists of 3 rows`() {
         assertAll(
             strip.tickets.map { ticket ->
@@ -36,7 +39,7 @@ class GeneratorTest {
         )
     }
 
-    @Test
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `Each ticket row contains five numbers and four blank spaces`() {
         assertAll(
             strip.tickets.map { ticket ->
@@ -47,7 +50,7 @@ class GeneratorTest {
         )
     }
 
-    @Test
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `Each ticket column consists of one, two or three numbers and never three blanks`() {
         assertAll(
             strip.tickets.map { ticket ->
@@ -58,7 +61,7 @@ class GeneratorTest {
         )
     }
 
-    @Test
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `The first column contains numbers from 1 to 9 (only nine)`() {
         assertAll(
             strip.tickets.map { ticket ->
@@ -70,22 +73,24 @@ class GeneratorTest {
     @ParameterizedTest
     @ValueSource(ints = [1, 2, 3, 4, 5, 7])
     fun `The second column numbers from 10 to 19 (ten), the third, 20 to 29 and so on (until last)`(columnIndex: Int) {
-        val rangeStart = columnIndex * 10
-        val rangeEnd = rangeStart + 9
+        repeat(REPEATED_TEST_COUNT){
+            val rangeStart = columnIndex * 10
+            val rangeEnd = rangeStart + 9
 
-        val expectedRangeInColumn = rangeStart..rangeEnd
+            val expectedRangeInColumn = rangeStart..rangeEnd
 
-        assertAll(
-            strip.tickets.map { ticket ->
-                Executable {
-                    assertTrue(
-                        ticket.columns[columnIndex].filterNotNull().all { it in expectedRangeInColumn })
+            assertAll(
+                strip.tickets.map { ticket ->
+                    Executable {
+                        assertTrue(
+                            ticket.columns[columnIndex].filterNotNull().all { it in expectedRangeInColumn })
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
-    @Test
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `The last column contains numbers from 80 to 90 (eleven)`() {
         assertAll(
             strip.tickets.map { ticket ->
@@ -94,7 +99,7 @@ class GeneratorTest {
         )
     }
 
-    @Test
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `Numbers in the ticket columns are ordered from top to bottom (ASC)`() {
         assertAll(
             strip.tickets.map { ticket ->
@@ -112,7 +117,7 @@ class GeneratorTest {
         )
     }
 
-    @Test
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `There can be no duplicate numbers between 1 and 90 in the strip`() {
         val allNumbers = strip.tickets.map { ticket ->
             ticket.rows.map { row ->
@@ -126,7 +131,7 @@ class GeneratorTest {
         )
     }
 
-    @Test
+    @RepeatedTest(REPEATED_TEST_COUNT)
     fun `Every number from 1 to 90 to appear across all 6 tickets`() {
         val allPossibleNumbers = (1..90).toMutableList()
         val allNumbers = strip.tickets.map { ticket ->
@@ -142,7 +147,7 @@ class GeneratorTest {
     fun `Generate 10k strips in less than 1s`() {
         val timeTaken = measureTime {
             for (i in (1..10000)) {
-                Generator().Generate();
+                StripFactory.create()
             }
         }
 

@@ -2,82 +2,85 @@ package org.example.core.generation
 
 import org.example.core.Ticket
 
-class TicketBuilder(val index: Int) {
-    var numbersCount = 0
-    val ranges = Array(9) { Column(it) }
-    val rows = arrayOf(
-        arrayOfNulls<Int?>(9),
-        arrayOfNulls<Int?>(9),
-        arrayOfNulls<Int?>(9)
-    )
+/**
+ * This class is responsible for building ticket. It receives numbers via [place] function.
+ *
+ * After all numbers got distributed [build] function balances ticket's empty cells
+ */
+internal class TicketBuilder(val index: Int) {
+    var numbersInTicketCount = 0
+    private val columns = Array(9) { Column(it) }
+    private val rows = Array(3) { arrayOfNulls<Int?>(9) }
 
-    fun canAccept(value: Int, rangeIndex: Int): Boolean {
-        val howManyInRange = ranges[rangeIndex].items.size
-        return howManyInRange < 3 && numbersCount < 15
+    fun hasSpace(columnIndex: Int): Boolean {
+        val howManyInColumn = columns[columnIndex].size
+        return howManyInColumn < 3 && numbersInTicketCount < 15
     }
 
-    fun place(value: Int, rangeIndex: Int) {
-        numbersCount++
-        ranges[rangeIndex].items.add(value)
+    /**
+     * Places number in matching column. This function is not checking if number can be placed.
+     *
+     * It is expected that caller will use [hasSpace] function first or has other mechanism to track ticket and
+     * column capacity
+     */
+    fun place(value: Int, columnIndex: Int) {
+        numbersInTicketCount++
+        columns[columnIndex].add(value)
     }
 
-    fun build() : Ticket {
+    fun build(): Ticket {
+        this.balanceEmptyCells()
         return Ticket(rows)
     }
 
-    fun balanceEmptyCells() {
-        val emptyCellsLeft = arrayOf(
-            Pair(0, 4),
-            Pair(1, 4),
-            Pair(2, 4)
-        )
+    private fun balanceEmptyCells() {
+        val rowsEmptyCells = Array(3) { RowEmptyCells(it) }
+        fun arrangeColumnWithTwoEmptyCells(column: Column){
+            val rowIndicesLeft = mutableListOf(0, 1, 2)
+            val ordered = rowsEmptyCells.sortedByDescending { c -> c.count }
+            val columnIndex = column.index
 
-        for (range in ranges.sortedBy { r -> r.items.size }){
-            if (range.items.size == 1){
-                val rowIndicesLeft = mutableListOf( 0, 1, 2)
-                val ordo = emptyCellsLeft.sortedByDescending { c -> c.count }
-                var row = ordo[0]
-                val columnIndex = range.index
+            (0..1).map {
+                val row = ordered[it]
                 rowIndicesLeft.remove(row.index)
                 row.count--
-
-                row = ordo[1]
-
-                rowIndicesLeft.remove(row.index)
-                row.count--
-
-                rows[rowIndicesLeft.first()][columnIndex] = range.items.first()
-
             }
 
-            if (range.items.size == 2){
-                val rowIndicesLeft = mutableListOf( 0, 1, 2)
-                val row = emptyCellsLeft.sortedByDescending { c -> c.count }[0]
-                val columnIndex = range.index
+            rows[rowIndicesLeft.first()][columnIndex] = column.first()
+        }
+        fun arrangeColumnWithOneEmptyCell(column: Column){
+            val columnIndicesLeft = mutableListOf(0, 1, 2)
 
-                rowIndicesLeft.remove(row.index)
-                row.count--
+            val row = rowsEmptyCells.maxBy { c -> c.count }
+            val columnIndex = column.index
 
-                val ordered = range.items.sortedBy { i -> i }
-                rows[rowIndicesLeft.first()][columnIndex] = ordered[0]
-                rows[rowIndicesLeft.last()][columnIndex] = ordered[1]
+            columnIndicesLeft.remove(row.index)
+            row.count--
 
-            }
+            val ordered = column.sortedBy { it }
+            rows[columnIndicesLeft.first()][columnIndex] = ordered[0]
+            rows[columnIndicesLeft.last()][columnIndex] = ordered[1]
+        }
+        fun arrangeColumnWithNoEmptyCells(column: Column){
+            val columnIndex = column.index
+            val ordered = column.sortedBy { it }
 
-            if (range.items.size == 3){
-                val columnIndex = range.index
-                val ordered = range.items.sortedBy{ i -> i }
+            rows[0][columnIndex] = ordered[0]
+            rows[1][columnIndex] = ordered[1]
+            rows[2][columnIndex] = ordered[2]
+        }
 
-                rows[0][columnIndex] = ordered[0]
-                rows[1][columnIndex] = ordered[1]
-                rows[2][columnIndex] = ordered[2]
+        for (column in columns.sortedBy { c -> c.size }) {
+            when (column.size){
+                1 -> arrangeColumnWithTwoEmptyCells(column)
+                2 -> arrangeColumnWithOneEmptyCell(column)
+                3 -> arrangeColumnWithNoEmptyCells(column)
             }
         }
     }
 
-    class Pair(val index: Int, var count: Int)
-
-    class Column(val index: Int) {
-        val items = mutableListOf<Int?>()
+    private class Column(val index: Int) : ArrayList<Int?>(3)
+    private class RowEmptyCells(val index: Int){
+        var count: Int = 4
     }
 }

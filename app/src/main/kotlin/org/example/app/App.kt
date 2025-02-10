@@ -4,7 +4,7 @@
 package org.example.app
 
 import org.example.core.*
-import org.example.core.generation.Generator
+import org.example.core.generation.StripFactory
 import kotlin.time.measureTime
 
 
@@ -12,7 +12,7 @@ fun main() {
     var strip: Strip? = null
     val timeTaken = measureTime {
         for (i in (1..10000)){
-            strip = Generator().Generate()
+            strip = StripFactory.create()
         }
     }
 
