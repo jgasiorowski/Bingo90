@@ -33,6 +33,10 @@ internal class TicketBuilder(val index: Int) {
         return Ticket(rows)
     }
 
+    /**
+     * This function is balancing empty cells across all rows in a way that each row contains exactly 4 blanks and 5 numbers
+     * and fills actual [rows] property with ordered values in columns
+     */
     private fun balanceEmptyCells() {
         val rowsEmptyCells = Array(3) { RowEmptyCells(it) }
         fun arrangeColumnWithTwoEmptyCells(column: Column){
