@@ -3,8 +3,8 @@
 ## How to run
 TODO
 ## Results 
-Generating 10k strips takes around **240-280ms** on cold run\
-Warmed up run can take up to **110-150ms** 
+Generating 10k strips takes around **240-280ms** on a cold run\
+A warmed-up run can take up to **110-150ms** 
 > [!NOTE]
 > Performance was measured on i7-12700K processor running in single thread
 
@@ -35,4 +35,4 @@ To generate bingo 90 strips, the application uses an algorithm built around two 
 4. Skip columns with three numbers - there is nothing to arrange here
 5. Order the numbers in each column in ascending order before returning final result
 
-[^1]: Whenever multiple such resources are available, the process selects at random to make tickets _appear_ more random
+[^1]: Whenever multiple such resources are available, the process selects at random to make numbers on the ticket _appear_ more evenly distributed
