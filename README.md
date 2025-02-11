@@ -1,7 +1,36 @@
 # Bingo 90
 
 ## How to run
-TODO
+- Build
+    ```
+    ./gradlew build  
+    ```
+- Run tests
+    ```
+    ./gradlew test   
+    ```
+    or
+    ```
+    ./gradlew check   
+    ```
+- Run
+  - Generate one strip and print it
+      ```
+      ./gradlew run --args="print-one"   
+      ```
+  - Run performance check (10k strips without printing) 
+    - Without warmup
+        ```
+        ./gradlew run --args="perf"   
+        ```
+    - with warmup (default 1000 iterations)
+        ```
+        ./gradlew run --args="perf -w"   
+        ```
+    - with custom warmup
+        ```
+        ./gradlew run --args="perf -w 5000"   
+        ```
 ## Results 
 Generating 10k strips takes around **240-280ms** on a cold run\
 A warmed-up run can take up to **110-150ms** 
