@@ -7,6 +7,7 @@ plugins {
 }
 
 dependencies {
+    implementation("com.github.ajalt.clikt:clikt:5.0.3")
     implementation("org.apache.commons:commons-text")
     implementation(project(":core"))
 }
