@@ -3,21 +3,50 @@
  */
 package org.example.app
 
-import org.example.core.*
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.main
+import com.github.ajalt.clikt.core.subcommands
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.optionalValue
+import com.github.ajalt.clikt.parameters.types.int
 import org.example.core.generation.StripFactory
 import kotlin.time.measureTime
 
-
-fun main() {
-    var strip: Strip? = null
-    val timeTaken = measureTime {
-        for (i in (1..10000)){
-            strip = StripFactory.create()
-        }
-    }
-
-    println(timeTaken)
-    StripPrinter.print(strip!!);
+class App : CliktCommand() {
+    override fun run() = Unit
 }
+
+class PrintOne : CliktCommand() {
+    override fun run() {
+        StripPrinter.print(StripFactory.create())
+    }
+}
+
+class Performance : CliktCommand(name = "perf") {
+    private val warmUp by option("-w", "--warmup").int().optionalValue(1000)
+    override fun run() {
+        val isWarmupEnabled = warmUp != null
+        println("Run with warm-up: $isWarmupEnabled")
+
+        if (isWarmupEnabled) {
+            println("Warmup iterations: $warmUp")
+            repeat(warmUp!!) {
+                StripFactory.create()
+            }
+        }
+
+        val timeTaken = measureTime {
+            repeat(10000) {
+                StripFactory.create()
+            }
+        }
+
+        println("Generating 10k strips took: $timeTaken")
+    }
+}
+
+fun main(args: Array<String>) = App()
+    .subcommands(PrintOne(), Performance())
+    .main(args)
 
 
