@@ -73,7 +73,7 @@ class StripFactoryTest {
     @ParameterizedTest
     @ValueSource(ints = [1, 2, 3, 4, 5, 7])
     fun `The second column numbers from 10 to 19 (ten), the third, 20 to 29 and so on (until last)`(columnIndex: Int) {
-        repeat(REPEATED_TEST_COUNT){
+        repeat(REPEATED_TEST_COUNT) {
             val rangeStart = columnIndex * 10
             val rangeEnd = rangeStart + 9
 

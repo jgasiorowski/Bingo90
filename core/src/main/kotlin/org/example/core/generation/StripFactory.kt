@@ -14,7 +14,7 @@ class StripFactory {
          *
          * @return an instance of [Strip]
          */
-        fun create() : Strip {
+        fun create(): Strip {
             val tickets = Array(6) { TicketBuilder(it) }
             val availableNumberGroups = NumberGroupsProvider.provide()
 
