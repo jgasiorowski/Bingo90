@@ -5,8 +5,8 @@ import org.example.core.Ticket
 
 class StripPrinter {
     companion object {
-        fun print(strip: Strip){
-            for (ticket in strip.tickets){
+        fun print(strip: Strip) {
+            for (ticket in strip.tickets) {
                 print(ticket)
             }
         }
@@ -14,10 +14,11 @@ class StripPrinter {
         private fun print(ticket: Ticket) {
             println()
             println("----------------------------")
-            for (row in ticket.rows){
-                println("|${row.joinToString("|") {
-                    number -> number?.let { String.format("%02d", it) } ?: "  "}
-                }|")
+            for (row in ticket.rows) {
+                println(
+                    "|${
+                        row.joinToString("|") { number -> number?.let { String.format("%02d", it) } ?: "  " }
+                    }|")
             }
             println("----------------------------")
         }

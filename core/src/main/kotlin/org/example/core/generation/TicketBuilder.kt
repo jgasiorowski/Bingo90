@@ -39,7 +39,7 @@ internal class TicketBuilder(val index: Int) {
      */
     private fun balanceEmptyCells() {
         val rowsEmptyCells = Array(3) { RowEmptyCells(it) }
-        fun arrangeColumnWithTwoEmptyCells(column: Column){
+        fun arrangeColumnWithTwoEmptyCells(column: Column) {
             val rowIndicesLeft = mutableListOf(0, 1, 2)
             val ordered = rowsEmptyCells.sortedByDescending { c -> c.count }
             val columnIndex = column.index
@@ -52,7 +52,8 @@ internal class TicketBuilder(val index: Int) {
 
             rows[rowIndicesLeft.first()][columnIndex] = column.first()
         }
-        fun arrangeColumnWithOneEmptyCell(column: Column){
+
+        fun arrangeColumnWithOneEmptyCell(column: Column) {
             val columnIndicesLeft = mutableListOf(0, 1, 2)
 
             val row = rowsEmptyCells.maxBy { c -> c.count }
@@ -65,7 +66,8 @@ internal class TicketBuilder(val index: Int) {
             rows[columnIndicesLeft.first()][columnIndex] = ordered[0]
             rows[columnIndicesLeft.last()][columnIndex] = ordered[1]
         }
-        fun arrangeColumnWithNoEmptyCells(column: Column){
+
+        fun arrangeColumnWithNoEmptyCells(column: Column) {
             val columnIndex = column.index
             val ordered = column.sortedBy { it }
 
@@ -75,7 +77,7 @@ internal class TicketBuilder(val index: Int) {
         }
 
         for (column in columns.sortedBy { c -> c.size }) {
-            when (column.size){
+            when (column.size) {
                 1 -> arrangeColumnWithTwoEmptyCells(column)
                 2 -> arrangeColumnWithOneEmptyCell(column)
                 3 -> arrangeColumnWithNoEmptyCells(column)
@@ -84,7 +86,7 @@ internal class TicketBuilder(val index: Int) {
     }
 
     private class Column(val index: Int) : ArrayList<Int?>(3)
-    private class RowEmptyCells(val index: Int){
+    private class RowEmptyCells(val index: Int) {
         var count: Int = 4
     }
 }
